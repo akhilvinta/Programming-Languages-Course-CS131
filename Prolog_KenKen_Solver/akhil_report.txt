@@ -1,0 +1,130 @@
+As directed, I first measured the difference in runtime between kenken and plain_kenken, with the following commands:
+
+kenken: statistics, kenken_testcase(N,C), kenken(N,C,T), statistics.
+plain_kenken: statistics, kenken_testcase_2(N,C), plain_kenken(N,C,T), statistics.
+
+
+kenken output runtime:
+
+Memory               limit         in use            free
+
+   trail  stack      16383 Kb            0 Kb        16383 Kb
+   cstr   stack      16384 Kb            0 Kb        16384 Kb
+   global stack      32767 Kb            2 Kb        32765 Kb
+   local  stack      16383 Kb            0 Kb        16383 Kb
+   atom   table      32768 atoms      1804 atoms     30964 atoms
+
+Times              since start      since last
+
+   user   time       2.524 sec       2.524 sec
+   system time       0.011 sec       0.011 sec
+   cpu    time       2.535 sec       2.535 sec
+   real   time      84.716 sec      84.716 sec
+Memory               limit         in use            free
+
+   trail  stack      16383 Kb            7 Kb        16376 Kb
+   cstr   stack      16383 Kb            8 Kb        16375 Kb
+   global stack      32767 Kb            5 Kb        32762 Kb
+   local  stack      16383 Kb            4 Kb        16379 Kb
+   atom   table      32768 atoms      1804 atoms     30964 atoms
+
+Times              since start      since last
+
+   user   time       2.524 sec       0.000 sec
+   system time       0.012 sec       0.001 sec
+   cpu    time       2.536 sec       0.001 sec
+   real   time      84.716 sec       0.000 sec
+
+Real runtime: 84.716 - 84.716 = 0sec (?)
+
+
+plain_kenken output runtime: 
+
+Memory               limit         in use            free
+
+   trail  stack      16383 Kb            0 Kb        16383 Kb
+   cstr   stack      16384 Kb            0 Kb        16384 Kb
+   global stack      32767 Kb            2 Kb        32765 Kb
+   local  stack      16383 Kb            0 Kb        16383 Kb
+   atom   table      32768 atoms      1792 atoms     30976 atoms
+
+Times              since start      since last
+
+   user   time       0.005 sec       0.005 sec
+   system time       0.001 sec       0.001 sec
+   cpu    time       0.006 sec       0.006 sec
+   real   time      11.179 sec      11.179 sec
+Memory               limit         in use            free
+
+   trail  stack      16383 Kb            0 Kb        16383 Kb
+   cstr   stack      16384 Kb            0 Kb        16384 Kb
+   global stack      32767 Kb            5 Kb        32762 Kb
+   local  stack      16383 Kb            5 Kb        16378 Kb
+   atom   table      32768 atoms      1792 atoms     30976 atoms
+
+Times              since start      since last
+
+   user   time       0.083 sec       0.078 sec
+   system time       0.001 sec       0.000 sec
+   cpu    time       0.084 sec       0.078 sec
+   real   time      11.257 sec       0.078 sec
+
+Real Runtime: 11.257 - 11.179 = 0.078sec.
+
+
+Clearly, the runtime of kenken is significantly faster than that of plain_kenken. This has to do with the fact that plain_kenken must generate every new valid ordering via backtracking. That is, if a potential matrix/constraint fails, prolog must return to the generation of the matrix, or from the start of the constraint execution. 
+
+Kenken, on the other hand, will apply a constraint to the domain of a matrix, such that it fits all of the given rule of constraints. It will apply one constraint to a given input matrix of possibilities, and pass the output of that constraint to the next constraint. When the matrix of possbilities is passed through all of the given constraints, the final output matrix is created.
+
+
+
+No-op kenken:
+
+No-op kenken will operate using the following features.
+
+1. Every constraint will be passed to all four operator constrainers: +,-,*,/.
+2. Each constraint will be applied, and all passed matrices will move to the next rule.
+3. At the end of all rules, whichever matrices are still valid will be outputted.
+
+Input format: 
+
+no_op_kenken(N,C,T,operators)
+
+N: a nonnegative integer specifying the number of cells on each side of the KenKen square.
+C: a list of numeric cage constraints, without the operator.
+T: a list of list of integers. All the lists have length N. This represents the N×N grid.
+operators: same list of lists as C, with the correct used operator prepended to it. 
+
+Although this  version of no-op kenken will be extremely inefficient, it will certainly output the correct answer, as all permutations of valid grids are then tested amongst all the possible constraints provided by the no-op input C. 
+
+
+
+No-op kenken test case:
+kenken(
+    4, 
+    [
+	(12, [[1|1],[2|1],[3|1]]), 
+	(1, [[1|2],[2|2]]),
+	(7, [[1,3],[2,3]]),
+	(19, [[1,4],[2,4],[3,4],[3,3],[3,2],[4,3],[4,2],[4,1]]),
+	(3, [4,4])
+     ]
+
+).
+
+Output:
+
+N: 4
+C: [
+	*12, [[1|1],[2|1],[3|1]], 
+	-1, [[1|2],[2|2]],
+	+7, [[1,3],[2,3]],
+	+19, [[1,4],[2,4],[3,4],[3,3],[3,2],[4,3],[4,2],[4,1]],
+	+3, [4,4]
+   ]
+T: [[4,2,3,1],[3,1,4,2],[1,3,2,4],[2,4,1,3]]
+
+
+
+
+

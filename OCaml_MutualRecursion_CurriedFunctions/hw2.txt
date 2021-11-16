@@ -1,0 +1,36 @@
+//Akhil Vinta
+//akhil.vinta@gmail.com
+//405288527
+
+Problem 7:
+
+make_matcher: My make_matcher is extremely similar to the TA hint slides, and I use the ideas that Amit talked about in 
+discussion section to implement my code. The control flow for this function relies upon mutual recursion amongst two functions,
+each calling the other repeatedly, until an acceptor returns "Some", or all possible grammar paths have returned "None". I created one function,
+iterate_over_set_of_cur_rules_parser, that, as named, will explore every terminal and nonterminal that is in an expression mapped to by a nonterminal,  
+by calling its partner, dfs_into_each_individual_rule_parser. dfs_into_each_individual_rule_parser will explore one level deeper into the given
+terminal or nonterminal, and see if a terminal can be matched to the beginning of a string. If so, it will shave the terminal off of the expression, 
+remove the first element from the string, and call dfs_into_each_individual_rule_parser with the new expression and string. Else, if the current term
+is a nonterminal, dfs_into_each_individual_rule_parser will call iterate_over_set_of_cur_rules_parser on the expression that is mapped to by that given nonterminal.
+
+make_parser: My make_parser control flow is very similar to that of my make_matcher. I use a significant amount of code from make_matcher, 
+because the depth first traversal of the grammar is desirable in both. I first tweaked my make_matcher to output every list 
+that contributes to the matching string fragment, by changing no more than a few lines. Essentially, instead of removing the first element of the string fragment 
+when I encounter a terminal match, I instead create a tuple as follows: (nonterminal that directly let to this terminal match, rule expression that created this match).
+To do this, I need to keep track of the nonterminal leading to a current terminal match. I do so by introducing a new variable to my code that I named "locator".
+After constructing my list of [nonterminal -> rule -> (nonterminal + terminal) -> rule -> ...], I traverse the list in a trivial manner to create 
+my parse tree. Therefore, although my make_parser function doesn't directly call make_matcher, the vast majority of functionality is shared. 
+
+One drawback that I can immediately see with my approach is that the matcher will accept whichever any prefix of a string that is valid, t
+and can therefore settle for matches that are less than ideal. For example, in my test case grammar food_grammer, my start_symbol (N Menu) 
+maps to three expressions, [[N Only_Appetizer], [N Only_Entree], and [N Appetizer; N Entree]]. However, the expression [N Only_Appetizer]
+is in the mapping before the expression [N Appetizer; N Entree]. Therefore, if I give the program an input fragment such as 
+string = ["Chicken"; "Entree 1:"; "Pizza"; "with"; "straight up sauce"], with the program call 
+(make_matcher food_grammar accept_all string), the output will be " Some ["Entree 1:"; "Pizza"; "with"; "straight up sauce"] ". 
+This is because ["Chicken"] is a match with [N Only_Appetizer]. Even though the entire string is a match with 
+[N Menu] ->[N Appetizer; N Entree], the match we will output is [N Menu] -> [N Only_Appetizer]. This is a clear flaw in the functionality.
+
+Another drawback in this approach is any case where a nonterminal maps to an expression where the first term is itself. For example, 
+Expr -> [Expr; Binop; Expr] will result in infinite recursion, because the path Expr->Expr->Expr->...->Expr->Binop->Expr will always exist, and 
+in this case, our problem size does not get any smaller as we are not minuting our input string with each function call. This is another clear 
+flaw in functionality, as most reasonable grammars would contain input sets that invoke this problem in my code. 

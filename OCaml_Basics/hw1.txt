@@ -1,0 +1,34 @@
+Akhil Vinta
+405288527
+akhil.vinta@gmail.com 
+
+Homework Assessment:
+
+Problem 1)
+I searched the Ocaml List documentation to find a library function that would help me simplify this problem, and settled on List.exists().
+This helps me break down the problem, as I now search if every individual element in set a is also in set b,as desired.
+
+Problem 2)
+This is definitional. Set a = Set b iff a ⊆ b and b ⊆ a.
+
+Problem 3)
+My solution is inefficient, but simple. I simple concatenate the two lists using List.append(), and then I remove the duplicates with List.sort_uniq().
+
+Problem 4)
+This solution is very simple, using the library function List.fold_left(), which applies a function to every element in a list, accumulating a total into a given variable. 
+
+Problem 5)
+I read up on Russell's paradox, and tried my best to undertand the rules and type bindings of sets in Ocaml. After doing so, the answer was fairly clear. 
+
+Problem 6)
+I used recursion to solve this problem, exactly as explained in the discussion section.
+
+Problem 7)
+This function took quite a while to build, as it required numerous helper functions. Breaking the problem into smaller parts helped. Here was the progression of my function:
+1. Given a rule, calculate a list of nonterminals from the given nonterminal in the rule.
+2. Given a nonterminal, calculate all of the nonterminals that the given nonterminal reaches; that is, traverse the nonterminal as a get_all_direct_nonterminals_reached_by_list_of_nonterminals
+3. Repeatedly calculate step 2 starting with the start_symbol, until we are no longer adding elements to the list output of step 2.
+4. Now that we have our set of reachable nonterminals, I filter out the nonreachable nonterminals using the List.filter library function.
+
+
+
